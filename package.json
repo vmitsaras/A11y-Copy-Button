@@ -1,0 +1,68 @@
+{
+  "name": "a11y-copy-button",
+  "version": "1.0.0",
+  "description": "Accessible copy-to-clipboard button with localized status messages, fallback behavior, and addon hooks.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Vasileios Mitsaras",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmitsaras/A11y-Copy-Button.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vmitsaras/A11y-Copy-Button/issues"
+  },
+  "homepage": "https://github.com/vmitsaras/A11y-Copy-Button#readme",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "clipboard",
+    "copy-button",
+    "typescript",
+    "progressive-enhancement"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./docs": {
+      "types": "./dist/docs.d.ts",
+      "import": "./dist/docs.js"
+    },
+    "./adapters/table-markdown": {
+      "types": "./dist/adapters/table-markdown.d.ts",
+      "import": "./dist/adapters/table-markdown.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsdown && node -e \"const fs = require('node:fs'); fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('src/styles.css', 'dist/styles.css')\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "pack:check": "npm pack --dry-run",
+    "prepack": "npm run build",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0",
+    "a11y-notify": "^0.1.0",
+    "happy-dom": "^20.10.6",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

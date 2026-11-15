@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A11yCopyButton with A11y-Notify</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { max-width: 42rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.5 system-ui, sans-serif; }
+      section { margin-block: 2rem; }
+      [data-a11y-copy-button-status] { display: inline-block; margin-inline-start: 0.75rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>A11yCopyButton with A11y-Notify</h1>
+      <p>Both buttons show visible feedback. A11y-Notify requests the accessible announcement, while focus stays on the button.</p>
+
+      <section aria-labelledby="auto-heading">
+        <h2 id="auto-heading">Automatic announcement transport</h2>
+        <p>Uses <code>document.ariaNotify()</code> when available, or A11y-Notify’s live-region fallback.</p>
+        <button type="button" data-a11y-copy-button data-a11y-copy-button-value="https://example.com/auto" data-announcement-transport="auto">
+          <span data-a11y-copy-button-label>Copy automatic example link</span>
+        </button>
+        <span data-a11y-copy-button-status></span>
+      </section>
+
+      <section aria-labelledby="fallback-heading">
+        <h2 id="fallback-heading">Forced live-region announcement</h2>
+        <p>Uses A11y-Notify’s live region even if <code>document.ariaNotify()</code> is available.</p>
+        <button type="button" data-a11y-copy-button data-a11y-copy-button-value="https://example.com/fallback" data-announcement-transport="live-region">
+          <span data-a11y-copy-button-label>Copy fallback example link</span>
+        </button>
+        <span data-a11y-copy-button-status></span>
+      </section>
+
+      <section aria-labelledby="error-heading">
+        <h2 id="error-heading">Copy failure</h2>
+        <p>An empty value is rejected before any clipboard write. The visible error and announcement use the same message.</p>
+        <button type="button" data-a11y-copy-button data-a11y-copy-button-value="" data-announcement-transport="live-region">
+          <span data-a11y-copy-button-label>Try copying an empty value</span>
+        </button>
+        <span data-a11y-copy-button-status></span>
+      </section>
+
+      <p id="transport-result">Last announcement transport: none yet.</p>
+      <p>The copy operation uses the Clipboard API when available. This example opts into the copy button’s deprecated clipboard fallback separately from the announcement transport.</p>
+    </main>
+
+    <script type="module">
+      import { createCopyButton } from "../../dist/index.js";
+      import { a11yNotify, A11Y_NOTIFY_EVENTS } from "../../node_modules/a11y-notify/dist/index.js";
+
+      const transportResult = document.querySelector("#transport-result");
+
+      document.addEventListener(A11Y_NOTIFY_EVENTS.announce, (event) => {
+        transportResult.textContent = `Last announcement transport: ${event.detail.transport}.`;
+      });
+      document.addEventListener(A11Y_NOTIFY_EVENTS.error, () => {
+        transportResult.textContent = "Last announcement transport: failed.";
+      });
+
+      for (const root of document.querySelectorAll("[data-a11y-copy-button]")) {
+        const transport = root.dataset.announcementTransport;
+        const announce = (message) => a11yNotify(message, { transport });
+
+        createCopyButton(root, {
+          announceStatus: false,
+          fallbackCopy: true,
+          messages: { copied: "Copied to clipboard", failed: "Copy failed" },
+          addons: [{
+            name: "a11y-notify",
+            onSuccess({ instance }) {
+              announce(instance.t("copied"));
+            },
+            onError({ instance, options }) {
+              announce(instance.t(options.disabled ? "disabled" : "failed"));
+            }
+          }]
+        });
+      }
+    </script>
+  </body>
+</html>
