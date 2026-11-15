@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="data:," />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ec" />
+    <title>Accessible Copy Button — Live examples &amp; API</title>
+    <meta
+      name="description"
+      content="Try six accessible copy-to-clipboard examples, then add clear, keyboard-friendly copy feedback to your own page with A11yCopyButton."
+    />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Accessible Copy Button — Live examples &amp; API" />
+    <meta
+      property="og:description"
+      content="Try six accessible copy-to-clipboard examples, then add clear, keyboard-friendly copy feedback to your own page with A11yCopyButton."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Accessible Copy Button — Live examples &amp; API" />
+    <meta
+      name="twitter:description"
+      content="Try six accessible copy-to-clipboard examples, then add clear, keyboard-friendly copy feedback to your own page with A11yCopyButton."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "name": "Accessible Copy Button — Live examples & API",
+            "description": "Try six accessible copy-to-clipboard examples, then add clear, keyboard-friendly copy feedback to your own page with A11yCopyButton.",
+            "mainEntity": { "@id": "https://github.com/vmitsaras/A11y-Copy-Button#software" }
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "@id": "https://github.com/vmitsaras/A11y-Copy-Button#software",
+            "name": "a11y-copy-button",
+            "description": "Accessible copy-to-clipboard button with localized status messages, fallback behavior, and addon hooks.",
+            "codeRepository": "https://github.com/vmitsaras/A11y-Copy-Button",
+            "programmingLanguage": ["TypeScript", "JavaScript"],
+            "runtimePlatform": "Browser",
+            "version": "1.0.0",
+            "license": "https://github.com/vmitsaras/A11y-Copy-Button/blob/main/LICENSE",
+            "keywords": ["accessibility", "clipboard", "copy-button", "typescript", "progressive-enhancement"],
+            "author": {
+              "@type": "Person",
+              "name": "Vasileios Mitsaras",
+              "url": "https://github.com/vmitsaras/",
+              "sameAs": ["https://github.com/vmitsaras/", "https://linkedin.com/in/vasilis-mitsaras"]
+            },
+            "sameAs": [
+              "https://github.com/vmitsaras/A11y-Copy-Button",
+              "https://www.npmjs.com/package/a11y-copy-button"
+            ],
+            "featureList": [
+              "Copies a configured URL, text from another element, or a source attribute",
+              "Displays success and error status messages",
+              "Keeps keyboard focus on the copy button after an attempt"
+            ]
+          }
+        ]
+      }
+    </script>
+    <link rel="stylesheet" href="./dist/styles.css" />
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f5f3ec;
+        --paper-deep: #ebe8dd;
+        --ink: #17221e;
+        --muted: #5d6862;
+        --line: #c8cec3;
+        --forest: #1e382d;
+        --lime: #d7f36a;
+        --orange: #ff835b;
+        --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 2rem;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 1rem;
+        line-height: 1.6;
+        text-rendering: optimizeLegibility;
+      }
+
+      a {
+        color: inherit;
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.2em;
+      }
+
+      a:hover {
+        text-decoration-thickness: 0.14em;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      .paste-test__input:focus-visible {
+        outline: 3px solid #bd492b;
+        outline-offset: 4px;
+      }
+
+      .site-header,
+      main,
+      .site-footer__inner {
+        inline-size: min(76rem, calc(100% - 3rem));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        min-block-size: 5.25rem;
+        border-block-end: 1px solid var(--line);
+      }
+
+      .wordmark {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        color: var(--ink);
+        font-size: 0.94rem;
+        font-weight: 750;
+        letter-spacing: -0.035em;
+        text-decoration: none;
+      }
+
+      .wordmark__icon {
+        display: grid;
+        inline-size: 2rem;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 0.55rem;
+        background: var(--lime);
+      }
+
+      .wordmark__icon svg {
+        inline-size: 1rem;
+      }
+
+      .site-nav,
+      .site-nav__list {
+        display: flex;
+        align-items: center;
+      }
+
+      .site-nav__list {
+        flex-wrap: wrap;
+        gap: 0.35rem 1.6rem;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .site-nav a {
+        color: #3e4b44;
+        font-size: 0.88rem;
+        font-weight: 620;
+        text-decoration: none;
+      }
+
+      .site-nav a:hover {
+        color: #a23c22;
+        text-decoration: underline;
+      }
+
+      .site-nav .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.55rem 0.8rem;
+        border: 1px solid var(--ink);
+        border-radius: 999px;
+        color: var(--ink);
+      }
+
+      main {
+        padding-block-end: 6rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+        align-items: center;
+        gap: clamp(2rem, 6vw, 6rem);
+        padding-block: clamp(4rem, 8vw, 7.5rem) clamp(4rem, 7vw, 6.75rem);
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0 0 1.3rem;
+        color: #476052;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        inline-size: 1.65rem;
+        block-size: 1px;
+        background: currentColor;
+        content: "";
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-block-start: 0;
+      }
+
+      h1 {
+        max-inline-size: 10ch;
+        margin-block-end: 1.35rem;
+        font-family: var(--serif);
+        font-size: clamp(3.55rem, 7.2vw, 6.9rem);
+        font-weight: 500;
+        letter-spacing: -0.075em;
+        line-height: 0.94;
+      }
+
+      h1 em {
+        color: #a9472b;
+        font-weight: 500;
+      }
+
+      .hero__intro {
+        max-inline-size: 38rem;
+        margin-block-end: 1.75rem;
+        color: #4d5b53;
+        font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+        line-height: 1.65;
+      }
+
+      .hero__links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.8rem 1.5rem;
+      }
+
+      .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.91rem;
+        font-weight: 700;
+      }
+
+      .text-link svg {
+        inline-size: 0.9rem;
+      }
+
+      .hero-card {
+        position: relative;
+        max-inline-size: 31rem;
+        justify-self: end;
+        inline-size: 100%;
+        padding: clamp(1.2rem, 3vw, 2rem);
+        overflow: hidden;
+        border: 1px solid #32493c;
+        border-radius: 1.15rem;
+        background: var(--forest);
+        color: #f8f8ee;
+        box-shadow: 0.8rem 0.8rem 0 var(--lime);
+      }
+
+      .hero-card::after {
+        position: absolute;
+        inset-block-start: -4.7rem;
+        inset-inline-end: -4.2rem;
+        inline-size: 11rem;
+        aspect-ratio: 1;
+        border: 1px solid rgb(215 243 106 / 20%);
+        border-radius: 50%;
+        box-shadow: 0 0 0 1.3rem rgb(215 243 106 / 5%), 0 0 0 2.7rem rgb(215 243 106 / 4%);
+        content: "";
+        pointer-events: none;
+      }
+
+      .hero-card__top,
+      .hero-card__label,
+      .hero-card__url,
+      .hero-card__hint {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-card__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-block-end: 1.3rem;
+        border-block-end: 1px solid rgb(255 255 255 / 20%);
+      }
+
+      .hero-card__dots {
+        display: flex;
+        gap: 0.35rem;
+      }
+
+      .hero-card__dots span {
+        inline-size: 0.48rem;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #83938a;
+      }
+
+      .hero-card__dots span:first-child {
+        background: var(--orange);
+      }
+
+      .hero-card__mode {
+        margin: 0;
+        color: #d1ddd4;
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero-card__label {
+        margin-block: 1.8rem 0.35rem;
+        color: #d1ddd4;
+        font-size: 0.84rem;
+      }
+
+      .hero-card__url {
+        margin-block-end: 1.65rem;
+        overflow-wrap: anywhere;
+        color: white;
+        font-family: var(--mono);
+        font-size: clamp(0.9rem, 2vw, 1.05rem);
+      }
+
+      .hero-card [data-a11y-copy-button] {
+        --a11y-copy-button-background: var(--lime);
+        --a11y-copy-button-color: #17221e;
+        --a11y-copy-button-border: var(--lime);
+        --a11y-copy-button-focus-ring: white;
+        --a11y-copy-button-success-color: var(--lime);
+        --a11y-copy-button-error-color: #ffab91;
+
+        min-block-size: 2.9rem;
+        padding-inline: 1.05rem;
+        border-radius: 0.55rem;
+      }
+
+      .hero-card [data-a11y-copy-button-status] {
+        margin-inline-start: 0.75rem;
+        color: #f1f5eb;
+      }
+
+      .hero-card__hint {
+        margin-block: 1.1rem 0;
+        color: #d1ddd4;
+        font-size: 0.77rem;
+      }
+
+      .section {
+        padding-block: clamp(3.5rem, 7vw, 6rem);
+        border-block-start: 1px solid var(--line);
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-block-end: 2rem;
+      }
+
+      .section-heading__main {
+        max-inline-size: 42rem;
+      }
+
+      .section-heading .eyebrow {
+        margin-block-end: 0.7rem;
+      }
+
+      .section-heading h2,
+      .setup__copy h2 {
+        margin-block-end: 0.5rem;
+        font-family: var(--serif);
+        font-size: clamp(2.45rem, 4.5vw, 4.25rem);
+        font-weight: 500;
+        letter-spacing: -0.055em;
+        line-height: 1;
+      }
+
+      .section-heading p,
+      .setup__copy > p {
+        max-inline-size: 42rem;
+        margin-block-end: 0;
+        color: var(--muted);
+      }
+
+      .section-count {
+        flex: none;
+        padding-block-end: 0.3rem;
+        color: #5b695f;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+      }
+
+      .try-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 15rem;
+        grid-template-areas: "examples aside";
+        align-items: start;
+        gap: 2rem;
+      }
+
+      .example-grid {
+        grid-area: examples;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+      }
+
+      .example-card {
+        display: flex;
+        min-inline-size: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: clamp(1.1rem, 2.5vw, 1.6rem);
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: #fbfaf6;
+      }
+
+      .example-card__number {
+        display: inline-grid;
+        inline-size: 1.9rem;
+        aspect-ratio: 1;
+        margin-block-end: 1.5rem;
+        place-items: center;
+        border: 1px solid #9aa69c;
+        border-radius: 50%;
+        color: #43554a;
+        font-family: var(--mono);
+        font-size: 0.68rem;
+      }
+
+      .example-card h3 {
+        margin-block-end: 0.4rem;
+        font-size: 1.05rem;
+        letter-spacing: -0.02em;
+        line-height: 1.35;
+      }
+
+      .example-card p {
+        margin-block-end: 1.2rem;
+        color: var(--muted);
+        font-size: 0.91rem;
+        line-height: 1.55;
+      }
+
+      .example-card [data-a11y-copy-button] {
+        --a11y-copy-button-background: var(--paper);
+        --a11y-copy-button-color: var(--ink);
+        --a11y-copy-button-border: #7f8d82;
+        --a11y-copy-button-focus-ring: #a9472b;
+        --a11y-copy-button-success-color: #23613e;
+        --a11y-copy-button-error-color: #a42f20;
+
+        margin-block-start: auto;
+        border-radius: 0.5rem;
+      }
+
+      .example-card [data-a11y-copy-button-status] {
+        min-block-size: 1.5em;
+        margin-block-start: 0.45rem;
+        color: #335541;
+        font-size: 0.82rem;
+      }
+
+      .example-card [data-a11y-copy-button-status]:empty {
+        display: block;
+      }
+
+      .example-card [data-a11y-copy-button-source] {
+        padding-inline-start: 0.8rem;
+        border-inline-start: 2px solid #91a68f;
+        color: #34483c;
+      }
+
+      .example-card pre,
+      .code-panel pre {
+        inline-size: 100%;
+        max-inline-size: 100%;
+        padding: 0.8rem 0.9rem;
+        margin: 0 0 1rem;
+        overflow-x: auto;
+        border: 1px solid #d5d8cf;
+        border-radius: 0.5rem;
+        background: #f0eee6;
+        color: #263b2f;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        line-height: 1.6;
+        tab-size: 2;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+      }
+
+      .example-card pre code,
+      .code-panel pre code {
+        padding: 0;
+        background: transparent;
+        overflow-wrap: normal;
+      }
+
+      .example-card--table {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.9fr);
+        align-items: start;
+        gap: 0 2rem;
+      }
+
+      .example-card--table .example-card__number,
+      .example-card--table h3,
+      .example-card--table > p {
+        grid-column: 1;
+      }
+
+      .example-card--table table {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        align-self: center;
+        margin-block: 0 1rem;
+      }
+
+      .example-card--table [data-a11y-copy-button],
+      .example-card--table [data-a11y-copy-button-status] {
+        grid-column: 1;
+      }
+
+      .example-table {
+        border-collapse: collapse;
+        inline-size: 100%;
+        font-size: 0.82rem;
+      }
+
+      .example-table caption {
+        margin-block-end: 0.45rem;
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-align: start;
+      }
+
+      .example-table th,
+      .example-table td {
+        padding: 0.45rem 0.55rem;
+        border-block-end: 1px solid #d4d8cf;
+        text-align: start;
+      }
+
+      .example-table thead {
+        background: #e8e9df;
+      }
+
+      .try-aside {
+        grid-area: aside;
+        position: sticky;
+        inset-block-start: 1.5rem;
+        padding: 1.15rem;
+        border: 1px solid #bdc8b9;
+        border-radius: 0.75rem;
+        background: #e8ebdf;
+      }
+
+      .try-aside h3 {
+        margin-block-end: 0.65rem;
+        font-size: 0.95rem;
+      }
+
+      .try-aside ol {
+        display: grid;
+        gap: 0.7rem;
+        padding-inline-start: 1.2rem;
+        margin: 0;
+        color: #46554b;
+        font-size: 0.83rem;
+      }
+
+      .try-aside li::marker {
+        color: #a9472b;
+        font-family: var(--mono);
+        font-weight: 700;
+      }
+
+      .paste-test {
+        margin-block-start: 2rem;
+      }
+
+      .paste-test__label {
+        display: block;
+        margin-block-end: 0.4rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .paste-test__hint {
+        margin-block-end: 0.8rem;
+        color: var(--muted);
+        font-size: 0.91rem;
+      }
+
+      .paste-test__input {
+        display: block;
+        inline-size: 100%;
+        min-block-size: 10rem;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid #7f8d82;
+        border-radius: 0.5rem;
+        background: #fbfaf6;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 0.91rem;
+        line-height: 1.6;
+        resize: vertical;
+      }
+
+      .setup {
+        display: grid;
+        grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.3fr);
+        gap: clamp(2rem, 7vw, 7rem);
+        align-items: start;
+      }
+
+      .setup__copy {
+        position: sticky;
+        inset-block-start: 1.5rem;
+      }
+
+      .setup__copy .eyebrow {
+        margin-block-end: 0.7rem;
+      }
+
+      .setup__copy h2 {
+        max-inline-size: 8ch;
+        margin-block-end: 1rem;
+      }
+
+      .setup__copy .install-line {
+        display: inline-block;
+        margin-block-start: 1.4rem;
+        padding: 0.55rem 0.75rem;
+        border: 1px solid #c4cabc;
+        border-radius: 0.45rem;
+        background: #ebe9e0;
+        color: #34483c;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+
+      .setup__details {
+        min-inline-size: 0;
+      }
+
+      .code-panel {
+        margin-block-end: 1rem;
+        overflow: hidden;
+        border: 1px solid #344c3f;
+        border-radius: 0.8rem;
+        background: #1b2d25;
+        color: #f5f5ed;
+      }
+
+      .code-panel__bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+        border-block-end: 1px solid rgb(255 255 255 / 15%);
+        color: #cfdbd1;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+      }
+
+      .code-panel__bar span:last-child {
+        color: var(--lime);
+        text-transform: uppercase;
+      }
+
+      .code-panel pre {
+        margin: 0;
+        padding: 1.2rem;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: #f0f3e8;
+        font-size: 0.82rem;
+      }
+
+      .setup-note {
+        padding: 1rem 1.1rem;
+        border-inline-start: 3px solid #a9472b;
+        background: #ece9df;
+        color: #46554b;
+        font-size: 0.86rem;
+      }
+
+      .api-section .section-heading {
+        margin-block-end: 1.3rem;
+      }
+
+      .api-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: #fbfaf6;
+      }
+
+      .api-table {
+        inline-size: 100%;
+        border-collapse: collapse;
+        text-align: start;
+      }
+
+      .api-table caption {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .api-table th,
+      .api-table td {
+        padding: 0.8rem 1rem;
+        border-block-end: 1px solid #e1e2d9;
+        text-align: start;
+        vertical-align: top;
+      }
+
+      .api-table thead {
+        background: #e9ebe1;
+        color: #34483c;
+        font-size: 0.77rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .api-table tbody th {
+        inline-size: 38%;
+        color: #273c30;
+        font-weight: 650;
+      }
+
+      .api-table tbody tr:last-child th,
+      .api-table tbody tr:last-child td {
+        border-block-end: 0;
+      }
+
+      .api-table code {
+        overflow-wrap: anywhere;
+      }
+
+      .api-footnote {
+        margin-block: 1rem 0;
+        color: var(--muted);
+        font-size: 0.89rem;
+      }
+
+      .accessibility-note {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: start;
+        margin-block-start: 2.5rem;
+        padding: clamp(1.2rem, 3vw, 2rem);
+        border-radius: 0.8rem;
+        background: #e8ebdf;
+      }
+
+      .accessibility-note__mark {
+        display: grid;
+        inline-size: 2.3rem;
+        aspect-ratio: 1;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--lime);
+        color: #243b2f;
+        font-size: 1.1rem;
+        font-weight: 800;
+      }
+
+      .accessibility-note h3 {
+        margin-block-end: 0.3rem;
+        font-size: 1rem;
+      }
+
+      .accessibility-note p {
+        max-inline-size: 70ch;
+        margin-block-end: 0;
+        color: #4c5a50;
+        font-size: 0.88rem;
+      }
+
+      .site-footer {
+        padding-block: 2rem;
+        background: #17221e;
+        color: #f5f3ec;
+      }
+
+      .site-footer__inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem 3rem;
+      }
+
+      .site-footer__brand p {
+        margin-block: 0.25rem;
+      }
+
+      .site-footer__name {
+        font-weight: 750;
+      }
+
+      .site-footer__meta {
+        color: #c3d0c6;
+        font-size: 0.83rem;
+      }
+
+      .site-footer__nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.5rem;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .site-footer a {
+        color: #f5f3ec;
+        font-size: 0.88rem;
+      }
+
+      @media (max-width: 58rem) {
+        .hero {
+          grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.85fr);
+          gap: 2rem;
+        }
+
+        .try-layout {
+          grid-template-columns: minmax(0, 1fr) 12.5rem;
+          gap: 1rem;
+        }
+
+        .setup {
+          grid-template-columns: minmax(12rem, 0.6fr) minmax(0, 1.4fr);
+          gap: 2rem;
+        }
+      }
+
+      @media (max-width: 46rem) {
+        .site-header,
+        main,
+        .site-footer__inner {
+          inline-size: min(100% - 2rem, 40rem);
+        }
+
+        .site-header {
+          min-block-size: 4.5rem;
+          gap: 1rem;
+        }
+
+        .site-nav__list {
+          gap: 0.35rem 0.9rem;
+        }
+
+        .site-nav a {
+          font-size: 0.8rem;
+        }
+
+        .site-nav .nav-cta {
+          padding: 0.4rem 0.65rem;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+          padding-block: 4rem 4.5rem;
+        }
+
+        h1 {
+          max-inline-size: 9ch;
+          font-size: clamp(3.6rem, 16vw, 5.7rem);
+        }
+
+        .hero-card {
+          justify-self: start;
+          max-inline-size: 35rem;
+          box-shadow: 0.45rem 0.45rem 0 var(--lime);
+        }
+
+        .section-heading {
+          align-items: flex-start;
+        }
+
+        .section-count {
+          display: none;
+        }
+
+        .try-layout {
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            "aside"
+            "examples";
+        }
+
+        .try-aside {
+          position: static;
+        }
+
+        .try-aside ol {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+          padding-inline-start: 1rem;
+        }
+
+        .example-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .setup {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .setup__copy {
+          position: static;
+        }
+
+        .setup__copy h2 {
+          max-inline-size: 12ch;
+        }
+
+        .api-table th,
+        .api-table td {
+          padding: 0.7rem;
+        }
+      }
+
+      @media (max-width: 34rem) {
+        .site-header,
+        main,
+        .site-footer__inner {
+          inline-size: calc(100% - 1.5rem);
+        }
+
+        .wordmark {
+          gap: 0.45rem;
+          font-size: 0.84rem;
+        }
+
+        .wordmark__icon {
+          inline-size: 1.75rem;
+        }
+
+        .site-nav__list {
+          gap: 0.25rem 0.65rem;
+        }
+
+        .site-nav .nav-cta {
+          border: 0;
+          padding: 0.2rem 0;
+        }
+
+        .site-nav .nav-cta svg {
+          display: none;
+        }
+
+        .hero {
+          padding-block: 3.5rem 3.75rem;
+        }
+
+        .hero__links {
+          gap: 0.75rem 1rem;
+        }
+
+        .section {
+          padding-block: 3.5rem;
+        }
+
+        .section-heading {
+          margin-block-end: 1.5rem;
+        }
+
+        .section-heading h2,
+        .setup__copy h2 {
+          font-size: clamp(2.35rem, 11vw, 3.25rem);
+        }
+
+        .try-aside ol {
+          grid-template-columns: 1fr;
+        }
+
+        .example-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .example-card--table {
+          grid-column: auto;
+          display: flex;
+        }
+
+        .example-card--table table {
+          margin-block: 0 1rem;
+        }
+
+        .api-wrap {
+          overflow: visible;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+        }
+
+        .api-table,
+        .api-table tbody,
+        .api-table tr,
+        .api-table th,
+        .api-table td {
+          display: block;
+          inline-size: 100%;
+        }
+
+        .api-table thead {
+          position: absolute;
+          inline-size: 1px;
+          block-size: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+
+        .api-table tbody tr {
+          margin-block-end: 0.6rem;
+          overflow: hidden;
+          border: 1px solid var(--line);
+          border-radius: 0.6rem;
+          background: #fbfaf6;
+        }
+
+        .api-table tbody th,
+        .api-table tbody td {
+          padding: 0.55rem 0.75rem;
+          border: 0;
+        }
+
+        .api-table tbody td {
+          padding-block-start: 0;
+          color: var(--muted);
+          font-size: 0.86rem;
+        }
+
+        .site-footer__inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="A11yCopyButton home">
+        <span class="wordmark__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none" focusable="false">
+            <path d="M7 6.25V4.9A1.9 1.9 0 0 1 8.9 3h6.2A1.9 1.9 0 0 1 17 4.9v6.2a1.9 1.9 0 0 1-1.9 1.9h-1.35M5.1 7h6.2A1.9 1.9 0 0 1 13.2 8.9v6.2a1.9 1.9 0 0 1-1.9 1.9H5.1a1.9 1.9 0 0 1-1.9-1.9V8.9A1.9 1.9 0 0 1 5.1 7Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span>A11yCopyButton</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <ul class="site-nav__list">
+          <li><a href="#examples">Examples</a></li>
+          <li><a href="#setup">Setup</a></li>
+          <li><a class="nav-cta" href="#api">API <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__copy">
+          <p class="eyebrow">A small detail. A clearer experience.</p>
+          <h1 id="page-title">Copy should feel <em>this clear.</em></h1>
+          <p class="hero__intro">
+            A11yCopyButton gives real buttons helpful feedback everyone can follow: a clear result, a steady focus, and no mystery about what happened.
+          </p>
+          <div class="hero__links">
+            <a class="text-link" href="#examples">Try the examples <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+            <a class="text-link" href="https://github.com/vmitsaras/A11y-Copy-Button">View on GitHub <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+          </div>
+        </div>
+
+        <div class="hero-card" aria-label="Interactive copy link example">
+          <div class="hero-card__top">
+            <div class="hero-card__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <p class="hero-card__mode">Live example / 01</p>
+          </div>
+          <p class="hero-card__label">Share this resource</p>
+          <p class="hero-card__url">https://example.com/accessible-media</p>
+          <button type="button" data-a11y-copy-button data-a11y-copy-button-value="https://example.com/accessible-media">
+            <span data-a11y-copy-button-label>Copy link</span>
+          </button>
+          <span data-a11y-copy-button-status></span>
+          <p class="hero-card__hint">The result appears here. Focus stays on the button.</p>
+        </div>
+      </section>
+
+      <section class="section" id="examples" aria-labelledby="examples-heading">
+        <div class="section-heading">
+          <div class="section-heading__main">
+            <p class="eyebrow">Six patterns, ready to try</p>
+            <h2 id="examples-heading">Put it to work.</h2>
+            <p>Each button is live. Try a copy, then use Tab to check that your place on the page never jumps.</p>
+          </div>
+          <span class="section-count" aria-hidden="true">01 — 06</span>
+        </div>
+
+        <div class="try-layout">
+          <aside class="try-aside" aria-labelledby="try-heading">
+            <h3 id="try-heading">A quick check</h3>
+            <ol>
+              <li>Tab to a copy button.</li>
+              <li>Press Enter or Space.</li>
+              <li>Read the result; focus stays put.</li>
+            </ol>
+          </aside>
+          <div class="example-grid">
+            <section class="example-card" aria-labelledby="source-text-heading">
+              <span class="example-card__number" aria-hidden="true">02</span>
+              <h3 id="source-text-heading">Copy a caption</h3>
+              <p id="caption-source" data-a11y-copy-button-source>Sunrise over the harbor, photographed in Thessaloniki.</p>
+              <button type="button" data-a11y-copy-button data-a11y-copy-button-source-selector="#caption-source">
+                <span data-a11y-copy-button-label>Copy caption</span>
+              </button>
+              <span data-a11y-copy-button-status></span>
+            </section>
+
+            <section class="example-card" aria-labelledby="code-heading">
+              <span class="example-card__number" aria-hidden="true">03</span>
+              <h3 id="code-heading">Copy a command</h3>
+              <p>Copy the exact install command into a project setup guide.</p>
+              <pre><code id="install-command">npm install a11y-copy-button</code></pre>
+              <button type="button" data-a11y-copy-button data-a11y-copy-button-source-selector="#install-command">
+                <span data-a11y-copy-button-label>Copy command</span>
+              </button>
+              <span data-a11y-copy-button-status></span>
+            </section>
+
+            <section class="example-card" aria-labelledby="attribute-heading">
+              <span class="example-card__number" aria-hidden="true">04</span>
+              <h3 id="attribute-heading">Copy an attribution</h3>
+              <p id="credit-source" data-a11y-copy-button-source data-credit="Photo by Vasileios Mitsaras, used with permission.">Photo by Vasileios Mitsaras</p>
+              <button type="button" data-a11y-copy-button data-a11y-copy-button-source-selector="#credit-source" data-a11y-copy-button-source-attribute="data-credit">
+                <span data-a11y-copy-button-label>Copy attribution</span>
+              </button>
+              <span data-a11y-copy-button-status></span>
+            </section>
+
+            <section class="example-card" aria-labelledby="error-heading">
+              <span class="example-card__number" aria-hidden="true">05</span>
+              <h3 id="error-heading">See an error, clearly</h3>
+              <p>This button has an empty value. It shows what useful failure feedback looks like.</p>
+              <button type="button" data-a11y-copy-button data-a11y-copy-button-value="">
+                <span data-a11y-copy-button-label>Try empty copy</span>
+              </button>
+              <span data-a11y-copy-button-status></span>
+            </section>
+
+            <section class="example-card example-card--table" id="table-copy-example" aria-labelledby="table-heading">
+              <span class="example-card__number" aria-hidden="true">06</span>
+              <h3 id="table-heading">Copy a table as Markdown</h3>
+              <p>The formatter reads the current table contents when you activate the button.</p>
+              <table class="example-table">
+                <caption>Supported copy formats</caption>
+                <thead><tr><th scope="col">Format</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Text</th><td>Available</td></tr>
+                  <tr><th scope="row">Markdown</th><td>Available</td></tr>
+                </tbody>
+              </table>
+              <button type="button" data-a11y-copy-button>
+                <span data-a11y-copy-button-label>Copy as Markdown</span>
+              </button>
+              <span data-a11y-copy-button-status></span>
+            </section>
+          </div>
+
+        </div>
+
+        <div class="paste-test">
+          <label class="paste-test__label" for="paste-test">Paste your copied content</label>
+          <p class="paste-test__hint" id="paste-test-hint">Copy from an example above, then paste here to check the result.</p>
+          <textarea class="paste-test__input" id="paste-test" rows="6" aria-describedby="paste-test-hint" spellcheck="false"></textarea>
+        </div>
+      </section>
+
+      <section class="section setup" id="setup" aria-labelledby="setup-heading">
+        <div class="setup__copy">
+          <p class="eyebrow">From demo to your page</p>
+          <h2 id="setup-heading">Two small steps.</h2>
+          <p>Start with a native button and an adjacent status element. Then let the package enhance it.</p>
+          <span class="install-line">npm install a11y-copy-button</span>
+        </div>
+
+        <div class="setup__details">
+          <div class="code-panel">
+            <div class="code-panel__bar"><span>index.html</span><span>01 / Markup</span></div>
+            <pre><code>&lt;link rel="stylesheet" href="./dist/styles.css"&gt;
+&lt;button type="button" data-a11y-copy-button
+  data-a11y-copy-button-value="https://example.com/accessible-media"&gt;
+  &lt;span data-a11y-copy-button-label&gt;Copy link&lt;/span&gt;
+&lt;/button&gt;
+&lt;span data-a11y-copy-button-status&gt;&lt;/span&gt;</code></pre>
+          </div>
+          <div class="code-panel">
+            <div class="code-panel__bar"><span>main.js</span><span>02 / Enhance</span></div>
+            <pre><code>import { createCopyButton } from "./dist/index.js";
+
+const button = document.querySelector("[data-a11y-copy-button]");
+if (button instanceof HTMLElement) {
+  createCopyButton(button);
+}</code></pre>
+          </div>
+          <p class="setup-note">These relative paths match this published demo. In an installed app, import <code>a11y-copy-button</code> and <code>a11y-copy-button/styles.css</code> through your bundler. Clipboard writes generally need a secure context and user activation.</p>
+        </div>
+      </section>
+
+      <section class="section api-section" id="api" aria-labelledby="api-heading">
+        <div class="section-heading">
+          <div class="section-heading__main">
+            <p class="eyebrow">A small, practical API</p>
+            <h2 id="api-heading">What you can do.</h2>
+            <p>Use the factory for a single control or initialize every marked button at once.</p>
+          </div>
+          <a class="text-link" href="https://github.com/vmitsaras/A11y-Copy-Button/blob/main/README.md#api">Full API reference <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+        </div>
+        <div class="api-wrap">
+          <table class="api-table">
+            <caption>Exports and instance methods</caption>
+            <thead><tr><th scope="col">API</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><th scope="row"><code>createCopyButton(root, options?)</code></th><td>Enhances one root and returns its instance. Calling it again for the same root returns that instance.</td></tr>
+              <tr><th scope="row"><code>initCopyButtonAll(options?)</code></th><td>Enhances all <code>[data-a11y-copy-button]</code> roots in the document and returns their instances.</td></tr>
+              <tr><th scope="row"><code>new A11yCopyButton(root, options?)</code></th><td>Constructs an instance directly; the factory function is the usual entry point.</td></tr>
+              <tr><th scope="row"><code>instance.copy(value?)</code></th><td>Attempts a copy. Pass a value to override the configured source for this attempt.</td></tr>
+              <tr><th scope="row"><code>instance.setValue(value)</code> / <code>getValue()</code></th><td>Updates or reads the configured copy value.</td></tr>
+              <tr><th scope="row"><code>instance.setLabel(label)</code> / <code>setStatus(status, message?)</code></th><td>Updates the button label or visible status feedback.</td></tr>
+              <tr><th scope="row"><code>instance.disable()</code> / <code>enable()</code></th><td>Changes the native button's disabled state.</td></tr>
+              <tr><th scope="row"><code>instance.reset()</code> / <code>destroy()</code> / <code>init()</code></th><td>Resets feedback, removes the enhancement, or reinitializes it.</td></tr>
+              <tr><th scope="row"><code>instance.setLocale(locale, messages?)</code> / <code>t(key, params?)</code></th><td>Changes messages or looks up a localized message.</td></tr>
+              <tr><th scope="row"><code>instance.registerAddon(addon)</code> / <code>unregisterAddon(name)</code></th><td>Adds or removes an addon hook object.</td></tr>
+              <tr><th scope="row"><code>instance.getAddon(name)</code> / <code>getAddons()</code></th><td>Reads registered addons.</td></tr>
+              <tr><th scope="row"><code>COPY_BUTTON_EVENTS</code></th><td>Names for lifecycle and copy result events emitted from the root.</td></tr>
+              <tr><th scope="row"><code>addCopyButtonEventListener(target, name, listener, options?)</code></th><td>Adds a typed event listener and returns an unsubscribe function.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="api-footnote">Common options include <code>value</code>, <code>sourceSelector</code>, <code>getValue</code>, <code>messages</code>, <code>resetDelay</code>, and <code>announceStatus</code>. See the <a href="https://github.com/vmitsaras/A11y-Copy-Button/blob/main/README.md#api">full API reference</a> for every option, event, and addon hook.</p>
+
+        <aside class="accessibility-note" aria-labelledby="accessibility-heading">
+          <span class="accessibility-note__mark" aria-hidden="true">✓</span>
+          <div>
+            <h3 id="accessibility-heading">Built around the basics.</h3>
+            <p>These examples use native buttons, so Tab, Enter, and Space work without custom key handling. Status appears beside the button and is announced politely by default. Focus remains on the button. The package CSS supports visible focus and reduced motion. Clipboard access can fail, so check the behavior in your target browsers and with assistive technology.</p>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div class="site-footer__brand">
+          <p class="site-footer__name">A11yCopyButton</p>
+          <p class="site-footer__meta">Open source · MIT License · Built by <a href="https://github.com/vmitsaras/">Vasileios Mitsaras</a></p>
+        </div>
+        <nav class="site-footer__nav" aria-label="Project links">
+          <ul>
+            <li><a href="https://github.com/vmitsaras/A11y-Copy-Button">GitHub repository</a></li>
+            <li><a href="https://www.npmjs.com/package/a11y-copy-button">npm package</a></li>
+            <li><a href="./a11y-notify/">A11y-Notify integration</a></li>
+            <li><a href="https://linkedin.com/in/vasilis-mitsaras">LinkedIn</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { createCopyButton } from "./dist/index.js";
+      import { tableToMarkdown } from "./dist/adapters/table-markdown.js";
+
+      const messages = {
+        copy: "Copy",
+        copying: "Copying",
+        copied: "Copied to clipboard",
+        failed: "Nothing was copied",
+        unavailable: "Nothing is available to copy",
+        reset: "Ready",
+        disabled: "Copy disabled"
+      };
+
+      const tableButton = document.querySelector("#table-copy-example [data-a11y-copy-button]");
+      document.querySelectorAll("[data-a11y-copy-button]").forEach((button) => {
+        if (button !== tableButton) createCopyButton(button, { messages });
+      });
+
+      if (tableButton) {
+        const tableExample = document.querySelector("#table-copy-example");
+        const table = tableExample?.querySelector("table");
+        if (table) createCopyButton(tableButton, {
+          messages,
+          getValue: () => tableToMarkdown(table)
+        });
+      }
+    </script>
+  </body>
+</html>

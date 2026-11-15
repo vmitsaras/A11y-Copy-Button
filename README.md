@@ -329,7 +329,34 @@ Clipboard writes usually require a secure context and user activation. The fallb
 
 ## Examples
 
-See [`examples/basic`](./examples/basic/README.md) for static value, source text, code block, source attribute, table-to-Markdown, and error-status examples. The optional, locally run [`A11y-Notify integration example`](./examples/a11y-notify/README.md) demonstrates native `document.ariaNotify()` and live-region announcement transports while keeping visible copy feedback. It also opts into the copy button's separate clipboard fallback.
+See [`examples/basic`](./examples/basic/README.md) for static value, source text, code block, source attribute, table-to-Markdown, and error-status examples. The optional [`A11y-Notify integration example`](./examples/a11y-notify/README.md) demonstrates native `document.ariaNotify()` and live-region announcement transports while keeping visible copy feedback. It also opts into the copy button's separate clipboard fallback.
+
+## GitHub Pages
+
+The site uses **Deploy from a branch → main → /docs**. It needs no custom deployment workflow or server runtime.
+
+```bash
+npm ci
+npm run build
+```
+
+`npm run build` (or `npm run pages:build`) builds the package in root `dist/` and regenerates `docs/` from `examples/basic/index.html` and `examples/a11y-notify/index.html`. Edit those source examples, then regenerate; do not edit the generated `docs/` files. Commit the generated folder along with source changes. `npm run pages:generate` refreshes only the site from an existing package build.
+
+The publish folder includes relative asset paths, `.nojekyll`, package runtime files in `docs/dist/`, and the A11y-Notify example runtime and MIT license in `docs/vendor/a11y-notify/`. The integration requires no CDN or runtime access to `node_modules`.
+
+To preview the project URL locally, serve `docs/` under a repository subpath:
+
+```bash
+mkdir -p /tmp/a11y-copy-button-pages
+ln -s "$PWD/docs" /tmp/a11y-copy-button-pages/A11y-Copy-Button
+python3 -m http.server 8000 --directory /tmp/a11y-copy-button-pages
+```
+
+Open `http://localhost:8000/A11y-Copy-Button/` and follow the A11y-Notify integration link. The expected deployed URL is [https://vmitsaras.github.io/A11y-Copy-Button/](https://vmitsaras.github.io/A11y-Copy-Button/).
+
+After committing and pushing `docs/` to `main`, select **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: main → Folder: /docs → Save** in GitHub. HTTPS on Pages supports the browser's secure-context clipboard requirement; clipboard permissions and assistive-technology announcements still need testing in the target setup.
+
+`npm pack` uses `prepack → build:dist` to build only the package artifacts. The `files` allowlist excludes the generated Pages site from the npm package.
 
 ## Docs Metadata
 

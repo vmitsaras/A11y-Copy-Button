@@ -48,11 +48,14 @@
   ],
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
-    "build": "npm run clean && tsdown && node -e \"const fs = require('node:fs'); fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('src/styles.css', 'dist/styles.css')\"",
+    "build": "npm run pages:build",
+    "build:dist": "npm run clean && tsdown && node -e \"const fs = require('node:fs'); fs.mkdirSync('dist', { recursive: true }); fs.copyFileSync('src/styles.css', 'dist/styles.css')\"",
+    "pages:build": "npm run build:dist && npm run pages:generate",
+    "pages:generate": "node scripts/build-pages.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "pack:check": "npm pack --dry-run",
-    "prepack": "npm run build",
+    "prepack": "npm run build:dist",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "changeset publish"
